@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ Fixed JS Compiler</title>
+    <title>⚡ Advanced JS Compiler</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,6 +13,8 @@
             --dark: #2d3436;
             --light: #f5f6fa;
             --danger: #ff4757;
+            --success: #00b894;
+            --info: #0984e3;
         }
 
         body {
@@ -30,7 +32,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
@@ -46,14 +48,17 @@
         }
 
         .btn {
-            padding: 12px 20px; /* Increased padding for larger buttons */
+            padding: 12px 20px;
             border: none;
-            border-radius: 6px; /* Slightly larger border radius */
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            margin-right: 12px; /* Slightly more spacing */
-            font-size: 16px; /* Larger font size */
+            margin-right: 12px;
+            font-size: 16px;
             transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn:hover {
@@ -71,8 +76,21 @@
             color: white;
         }
 
+        .btn-upload {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-save {
+            background: var(--info);
+            color: white;
+        }
+
         .button-container {
             margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .editor-container {
@@ -118,12 +136,16 @@
         .error {
             color: var(--danger);
         }
+
+        #fileInput {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-code"></i> Fixed JS Compiler</h1>
+            <h1><i class="fas fa-code"></i> Advanced JS Compiler</h1>
             <button id="themeBtn" class="btn">
                 <i class="fas fa-moon"></i> Dark Mode
             </button>
@@ -136,20 +158,28 @@
             <button id="clearBtn" class="btn btn-clear">
                 <i class="fas fa-trash"></i> Clear Output
             </button>
+            <button id="uploadBtn" class="btn btn-upload">
+                <i class="fas fa-upload"></i> Load JS File
+            </button>
+            <button id="saveBtn" class="btn btn-save">
+                <i class="fas fa-download"></i> Save Code
+            </button>
+            <input type="file" id="fileInput" accept=".js,.javascript,.txt">
         </div>
 
         <div class="editor-container">
             <div class="code-editor">
-                <textarea id="editor">// Fixed JS Compiler
-// Try running this code:
+                <textarea id="editor">// Welcome to JS Compiler
+// Write or upload your JavaScript code
 
 console.log("Hello, World!");
 
-function calculate(a, b) {
-    return a * b;
+function example() {
+    const now = new Date();
+    return `Current time: ${now.toLocaleTimeString()}`;
 }
 
-console.log("5 * 3 =", calculate(5, 3));</textarea>
+console.log(example());</textarea>
             </div>
             <div class="output-container">
                 <h3><i class="fas fa-terminal"></i> Output</h3>
@@ -174,25 +204,23 @@ console.log("5 * 3 =", calculate(5, 3));</textarea>
         const runBtn = document.getElementById('runBtn');
         const clearBtn = document.getElementById('clearBtn');
         const themeBtn = document.getElementById('themeBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const fileInput = document.getElementById('fileInput');
 
         // Run Code
         function runCode() {
-            outputDiv.innerHTML = ''; // Clear previous output
+            outputDiv.innerHTML = '';
             
             try {
-                // Backup original console.log
                 const originalConsoleLog = console.log;
                 
-                // Override console.log to capture output
                 console.log = function(...args) {
                     originalConsoleLog(...args);
                     outputDiv.innerHTML += args.join(' ') + '\n';
                 };
 
-                // Execute code
                 new Function(editor.getValue())();
-
-                // Restore original console.log
                 console.log = originalConsoleLog;
             } catch (error) {
                 outputDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
@@ -215,10 +243,43 @@ console.log("5 * 3 =", calculate(5, 3));</textarea>
                 : '<i class="fas fa-moon"></i> Dark Mode';
         }
 
+        // Handle file upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                editor.setValue(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+
+        // Save code to file
+        function saveCode() {
+            const code = editor.getValue();
+            const blob = new Blob([code], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'code.js' || 'script.js';
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+
         // Event Listeners
         runBtn.addEventListener('click', runCode);
         clearBtn.addEventListener('click', clearOutput);
         themeBtn.addEventListener('click', toggleTheme);
+        uploadBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileUpload);
+        saveBtn.addEventListener('click', saveCode);
     </script>
 </body>
 </html>
