@@ -176,7 +176,7 @@ console.log("Hello, World!");
 
 function example() {
     const now = new Date();
-    return Current time: ${now.toLocaleTimeString()};
+    return `Current time: ${now.toLocaleTimeString()}`;
 }
 
 console.log(example());</textarea>
@@ -223,7 +223,7 @@ console.log(example());</textarea>
                 new Function(editor.getValue())();
                 console.log = originalConsoleLog;
             } catch (error) {
-                outputDiv.innerHTML = <span class="error">Error: ${error.message}</span>;
+                outputDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
             }
         }
 
