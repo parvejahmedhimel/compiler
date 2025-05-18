@@ -211,6 +211,15 @@ console.log(example());</textarea>
         // Run Code
         function runCode() {
             outputDiv.innerHTML = '';
+             outputDiv.innerHTML = '';
+            const originalText = runBtn.innerHTML;
+            runBtn.innerHTML = '<span class="loading"></span> Running...';
+            runBtn.disabled = true;
+
+
+          
+
+            
             
             try {
                 const originalConsoleLog = console.log;
