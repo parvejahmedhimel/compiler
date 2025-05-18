@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Fixed JS Compiler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --danger: #ff4757;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        body.dark-mode {
+            background: var(--dark);
+            color: var(--light);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .btn-run {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-clear {
+            background: var(--danger);
+            color: white;
+        }
+
+        .editor-container {
+            display: flex;
+            gap: 20px;
+            height: 60vh;
+        }
+
+        .CodeMirror {
+            height: 100% !important;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .output-container {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .dark-mode .output-container {
+            background: #1e272e;
+        }
+
+        #output {
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        .error {
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-code"></i> Fixed JS Compiler</h1>
+            <button id="themeBtn" class="btn">
+                <i class="fas fa-moon"></i> Dark Mode
+            </button>
+        </header>
+
+        <div>
+            <button id="runBtn" class="btn btn-run">
+                <i class="fas fa-play"></i> Run
+            </button>
+            <button id="clearBtn" class="btn btn-clear">
+                <i class="fas fa-trash"></i> Clear
+            </button>
+        </div>
+
+        <div class="editor-container">
+            <textarea id="editor">// Fixed JS Compiler - No Duplicate Output!
+// Try running this code:
+
+console.log("Hello, World!");
+
+function calculate(a, b) {
+    return a * b;
+}
+
+console.log("5 * 3 =", calculate(5, 3));</textarea>
+            <div class="output-container">
+                <h3><i class="fas fa-terminal"></i> Output</h3>
+                <div id="output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script>
+        // Initialize Editor
+        const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+            mode: 'javascript',
+            theme: 'default',
+            lineNumbers: true,
+            indentUnit: 4
+        });
+
+        // DOM Elements
+        const outputDiv = document.getElementById('output');
+        const runBtn = document.getElementById('runBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const themeBtn = document.getElementById('themeBtn');
+
+        // Run Code (FIXED: No duplicate output)
+        function runCode() {
+            outputDiv.innerHTML = ''; // Clear previous output
+            
+            try {
+                // Backup original console.log
+                const originalConsoleLog = console.log;
+                
+                // Override console.log to capture output
+                console.log = function(...args) {
+                    originalConsoleLog(...args); // Keep original logging
+                    outputDiv.innerHTML += args.join(' ') + '\n';
+                };
+
+                // Execute code
+                new Function(editor.getValue())();
+
+                // Restore original console.log
+                console.log = originalConsoleLog;
+            } catch (error) {
+                outputDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+            }
+        }
+
+        // Clear Output
+        function clearOutput() {
+            outputDiv.innerHTML = '';
+        }
+
+        // Toggle Dark Mode
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            editor.setOption('theme', 
+                document.body.classList.contains('dark-mode') ? 'dracula' : 'default'
+            );
+            themeBtn.innerHTML = document.body.classList.contains('dark-mode') 
+                ? '<i class="fas fa-sun"></i> Light Mode' 
+                : '<i class="fas fa-moon"></i> Dark Mode';
+        }
+
+        // Event Listeners
+        runBtn.addEventListener('click', runCode);
+        clearBtn.addEventListener('click', clearOutput);
+        themeBtn.addEventListener('click', toggleTheme);
+    </script>
+</body>
+</html>
