@@ -154,6 +154,11 @@
         <div class="button-container">
             <button id="runBtn" class="btn btn-run">
                 <i class="fas fa-play"></i> Run Code
+
+
+  <
+
+                
             </button>
             <button id="clearBtn" class="btn btn-clear">
                 <i class="fas fa-trash"></i> Clear Output
@@ -209,13 +214,11 @@ console.log(example());</textarea>
         const fileInput = document.getElementById('fileInput');
 
         // Run Code
-        function runCode() {
+        async function runCode() {
             outputDiv.innerHTML = '';
-             outputDiv.innerHTML = '';
             const originalText = runBtn.innerHTML;
             runBtn.innerHTML = '<span class="loading"></span> Running...';
             runBtn.disabled = true;
-
 
           
 
