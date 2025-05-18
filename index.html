@@ -229,24 +229,52 @@ console.log(example());</textarea>
         const fileInput = document.getElementById('fileInput');
 
         // Run Code
-        async function runCode() {
-            outputDiv.innerHTML = '';
-            const originalText = runBtn.innerHTML;
-            runBtn.innerHTML = '<span class="loading"></span> Running...';
-            runBtn.disabled = true;
+      
 
+
+
+async function runCode() {
+    outputDiv.innerHTML = '';
+    const originalText = runBtn.innerHTML;
+
+    // Show loading spinner
+    runBtn.innerHTML = '<span class="loading"></span> Running...';
+    runBtn.disabled = true;
+
+    try {
+        const response = await fetch('https://php-compiler-api.herokuapp.com/compile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                code: editor.getValue()
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            outputDiv.innerHTML = `<span class="error">${data.error}</span>`;
+        } else {
+            outputDiv.innerHTML = data.output;
+        }
+    } catch (error) {
+        outputDiv.innerHTML = `<span class="error">Connection Error: ${error.message}</span>`;
+    } finally {
+        // Reset button
+        runBtn.innerHTML = originalText;
+        runBtn.disabled = false;
+    }
+}
+
+
+
+
+            
+
+            
           
-
-            
-            
-            try {
-                const originalConsoleLog = console.log;
-                
-                console.log = function(...args) {
-                    originalConsoleLog(...args);
-                    outputDiv.innerHTML += args.join(' ') + '\n';
-                };
-
                 new Function(editor.getValue())();
                 console.log = originalConsoleLog;
             } catch (error) {
