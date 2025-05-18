@@ -32,7 +32,7 @@
         }
 
         .container {
-            max-width: 1300px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
@@ -106,20 +106,10 @@
             border-radius: 8px;
         }
 
-       
-
-const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-    mode: 'javascript', // আগে ছিল 'application/x-httpd-php'
-    theme: 'default',
-    lineNumbers: true,
-    indentUnit: 4,
-    lineWrapping: true
-});
-
-
-
-
-            
+        .CodeMirror {
+            height: 100% !important;
+            border-radius: 8px;
+            font-size: 16px;
         }
 
         .output-container {
@@ -149,21 +139,6 @@ const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
 
         #fileInput {
             display: none;
-
-  .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-            
         }
     </style>
 </head>
@@ -179,11 +154,6 @@ const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
         <div class="button-container">
             <button id="runBtn" class="btn btn-run">
                 <i class="fas fa-play"></i> Run Code
-
-
-  <
-
-                
             </button>
             <button id="clearBtn" class="btn btn-clear">
                 <i class="fas fa-trash"></i> Clear Output
@@ -206,7 +176,7 @@ console.log("Hello, World!");
 
 function example() {
     const now = new Date();
-    return `Current time: ${now.toLocaleTimeString()}`;
+    return Current time: ${now.toLocaleTimeString()};
 }
 
 console.log(example());</textarea>
@@ -239,68 +209,21 @@ console.log(example());</textarea>
         const fileInput = document.getElementById('fileInput');
 
         // Run Code
-      
-
-
-function runCode() {
-    outputDiv.innerHTML = '';
-    const originalText = runBtn.innerHTML;
-    runBtn.innerHTML = '<span class="loading"></span> Running...';
-    runBtn.disabled = true;
-
-    try {
-        const userCode = editor.getValue();
-
-        // Capture console.log outputs
-        const log = console.log;
-        let output = '';
-        console.log = function (...args) {
-            output += args.join(' ') + '\n';
-            log.apply(console, args); // still show in real console
-        };
-
-        // Run user's JS code
-        new Function(userCode)();
-
-        // Show output
-        outputDiv.innerText = output || '[No output]';
-    } catch (error) {
-        outputDiv.innerHTML = `<span class="error">${error.message}</span>`;
-    } finally {
-        console.log = log; // restore original console
-        runBtn.innerHTML = originalText;
-        runBtn.disabled = false;
-    }
-}
-
-
-        const data = await response.json();
-
-        if (data.error) {
-            outputDiv.innerHTML = `<span class="error">${data.error}</span>`;
-        } else {
-            outputDiv.innerHTML = data.output;
-        }
-    } catch (error) {
-        outputDiv.innerHTML = `<span class="error">Connection Error: ${error.message}</span>`;
-    } finally {
-        // Reset button
-        runBtn.innerHTML = originalText;
-        runBtn.disabled = false;
-    }
-}
-
-
-
-
+        function runCode() {
+            outputDiv.innerHTML = '';
             
+            try {
+                const originalConsoleLog = console.log;
+                
+                console.log = function(...args) {
+                    originalConsoleLog(...args);
+                    outputDiv.innerHTML += args.join(' ') + '\n';
+                };
 
-            
-          
                 new Function(editor.getValue())();
                 console.log = originalConsoleLog;
             } catch (error) {
-                outputDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                outputDiv.innerHTML = <span class="error">Error: ${error.message}</span>;
             }
         }
 
