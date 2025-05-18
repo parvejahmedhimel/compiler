@@ -106,10 +106,20 @@
             border-radius: 8px;
         }
 
-        .CodeMirror {
-            height: 100% !important;
-            border-radius: 8px;
-            font-size: 16px;
+       
+
+const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+    mode: 'javascript', // আগে ছিল 'application/x-httpd-php'
+    theme: 'default',
+    lineNumbers: true,
+    indentUnit: 4,
+    lineWrapping: true
+});
+
+
+
+
+            
         }
 
         .output-container {
@@ -232,25 +242,37 @@ console.log(example());</textarea>
       
 
 
-
-async function runCode() {
+function runCode() {
     outputDiv.innerHTML = '';
     const originalText = runBtn.innerHTML;
-
-    // Show loading spinner
     runBtn.innerHTML = '<span class="loading"></span> Running...';
     runBtn.disabled = true;
 
     try {
-        const response = await fetch('https://php-compiler-api.herokuapp.com/compile', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                code: editor.getValue()
-            })
-        });
+        const userCode = editor.getValue();
+
+        // Capture console.log outputs
+        const log = console.log;
+        let output = '';
+        console.log = function (...args) {
+            output += args.join(' ') + '\n';
+            log.apply(console, args); // still show in real console
+        };
+
+        // Run user's JS code
+        new Function(userCode)();
+
+        // Show output
+        outputDiv.innerText = output || '[No output]';
+    } catch (error) {
+        outputDiv.innerHTML = `<span class="error">${error.message}</span>`;
+    } finally {
+        console.log = log; // restore original console
+        runBtn.innerHTML = originalText;
+        runBtn.disabled = false;
+    }
+}
+
 
         const data = await response.json();
 
